@@ -107,7 +107,7 @@ for i in range(1, 6):
     train_file.close()
 
 epochs = 100
-batch_size = args.batch_size
+batch_size = 100#args.batch_size
 
 # prev_loss = 1e4
 # patience = deepcopy(early_stop.patience)
@@ -149,7 +149,7 @@ class log_epoch_class(Callback):
 log_epoch=log_epoch_class()
 
 clr = CyclicLR(base_lr=0.001, max_lr=0.1,
-                        step_size=2000., mode='triangular2')   
+                        step_size=100., mode='triangular2')   
 
 
 for epoch in range(epochs):
