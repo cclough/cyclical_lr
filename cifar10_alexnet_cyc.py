@@ -69,7 +69,7 @@ model.add(Dense(10, kernel_initializer='glorot_normal',
         
 early_stop = EarlyStopping(monitor='loss', min_delta=0.0001, patience=5)
 now = str(time.time())
-tb_callback = TensorBoard(log_dir='../Tensorboard/alexnet/' + now)
+tb_callback = TensorBoard(log_dir='./TensorBoard/' + now)
 
 img = tf.placeholder(tf.float32, [28, 28, 3])
 norm_image = tf.image.per_image_standardization(img)
