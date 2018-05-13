@@ -141,8 +141,9 @@ class log_epoch_class(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
 
+        lr = K.eval(self.model.optimizer.lr)
         with open("log.txt", "a") as log_file:
-            log_file.write("Epoch: {}, logs: {}\n".format(epoch, logs))
+            log_file.write("{}: logs: {}, lr: {},\n".format(epoch, logs, lr))
         log_file.close()
 
 log_epoch=log_epoch_class()
