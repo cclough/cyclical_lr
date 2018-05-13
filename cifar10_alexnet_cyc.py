@@ -142,7 +142,7 @@ class log_epoch_class(Callback):
     def on_epoch_end(self, epoch, logs={}):
 
         with open("log.txt", "a") as log_file:
-            log_file.write("Epoch: {}, logs: {}".format(logs))
+            log_file.write("Epoch: {}, logs: {}".format(epoch, logs))
         log_file.close()
 
 log_epoch=log_epoch_class()
