@@ -84,7 +84,7 @@ cifar10_train_images = []
 cifar10_train_labels = []
 print("Loading training images...")
 for i in range(1, 6):
-    train_file = open('../../cifar-10-batches-py/data_batch_' + str(i), 'r')
+    train_file = open('./cifar-10-batches-py/data_batch_' + str(i), 'r')
     train_dict = pickle.load(train_file)
     for image, label in zip(train_dict['data'], train_dict['labels']):
         image_red = np.reshape(image[:1024], (32, 32))[2:-2, 2:-2] / 255.0
@@ -141,7 +141,7 @@ del cifar10_train_images, cifar10_train_labels
 print("Loading test images...")
 cifar10_test_images = []
 cifar10_test_labels = []
-test_file = open('../../cifar-10-batches-py/test_batch', 'r')
+test_file = open('./cifar-10-batches-py/test_batch', 'r')
 test_dict = pickle.load(test_file)
 for image, label in zip(test_dict['data'], test_dict['labels']):
     image_red = np.reshape(image[:1024], (32, 32))[2:-2, 2:-2] / 255.0
