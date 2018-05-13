@@ -4,11 +4,13 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D
-from keras.layers.normalization import BatchNormalization
+# from keras.layers.normalization import BatchNormalization
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.optimizers import SGD
 from keras.initializers import Constant
 import keras.backend as K
+from clr_callback import *
+
 import pickle, time, random
 from random import randint
 from copy import deepcopy
@@ -43,12 +45,12 @@ model.add(Conv2D(96, (5, 5), input_shape=(28, 28, 3), kernel_initializer=
                  'glorot_normal', bias_initializer=Constant(0.1), padding=
                  'same', activation='relu')) 
 model.add(MaxPooling2D((3, 3), padding='same'))
-model.add(BatchNormalization())
+# model.add(BatchNormalization())
 model.add(Conv2D(256, (5, 5), kernel_initializer='glorot_normal',
                  bias_initializer=Constant(0.1), padding='same',
                  activation='relu')) 
 model.add(MaxPooling2D((3, 3), padding='same'))
-model.add(BatchNormalization())
+# model.add(BatchNormalization())
 model.add(Flatten())
 
 if args.regularize:
@@ -111,12 +113,16 @@ prev_loss = 1e4
 patience = deepcopy(early_stop.patience)
 
 model.save("{}.e{}.h5".format(filename,0))
-        
+
+clr = CyclicLR(base_lr=0.001, max_lr=0.1,
+                        step_size=2000., mode='triangular2')   
+
 for epoch in range(epochs):
+
     hist = model.fit(np.array(cifar10_train_images), np.array(
                      cifar10_train_labels), epochs=(epoch + 1),
                      batch_size=batch_size, initial_epoch=epoch,
-                     callbacks=[tb_callback])
+                     callbacks=[tb_callback,clr])
 
     if args.save:
             model.save("{e}.e{}.h5".format(filename,epoch))
