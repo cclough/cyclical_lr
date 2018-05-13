@@ -155,7 +155,7 @@ for epoch in range(epochs):
 
     hist = model.fit(np.array(cifar10_train_images), np.array(
                      cifar10_train_labels), epochs=(epoch + 1),
-                     batch_size=batch_size, initial_epoch=epoch, validation_data=(cifar10_test_images, cifar10_test_labels)
+                     batch_size=batch_size, initial_epoch=epoch, validation_data=(cifar10_test_images, cifar10_test_labels),
                      callbacks=[tb_callback, clr, log_epoch])
 
     if args.save:
