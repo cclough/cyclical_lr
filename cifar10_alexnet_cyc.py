@@ -109,35 +109,9 @@ for i in range(1, 6):
 epochs = 100
 batch_size = args.batch_size
 
-prev_loss = 1e4
-patience = deepcopy(early_stop.patience)
+# prev_loss = 1e4
+# patience = deepcopy(early_stop.patience)
 
-model.save("{}.e{}.h5".format(filename,0))
-
-clr = CyclicLR(base_lr=0.001, max_lr=0.1,
-                        step_size=2000., mode='triangular2')   
-
-for epoch in range(epochs):
-
-    hist = model.fit(np.array(cifar10_train_images), np.array(
-                     cifar10_train_labels), epochs=(epoch + 1),
-                     batch_size=batch_size, initial_epoch=epoch,
-                     callbacks=[tb_callback,clr])
-
-    if args.save:
-            model.save("{e}.e{}.h5".format(filename,epoch))
-            
-    K.set_value(opt.lr, 0.95 * K.get_value(opt.lr))
-    if hist.history[early_stop.monitor][0] - prev_loss > early_stop.min_delta:
-        patience -= 1
-    else:
-        patience = deepcopy(early_stop.patience)
-    if patience <= 0:
-        break
-    else:
-        prev_loss = hist.history[early_stop.monitor][0]
-
-del cifar10_train_images, cifar10_train_labels
 print("Loading test images...")
 cifar10_test_images = []
 cifar10_test_labels = []
@@ -159,8 +133,49 @@ for image, label in zip(test_dict['data'], test_dict['labels']):
     cifar10_test_labels.append(label)
 test_file.close()
 
-print(model.evaluate(np.array(cifar10_test_images),
-    np.array(cifar10_test_labels), batch_size=256))
+
+model.save("{}.e{}.h5".format(filename,0))
+
+
+class log_epoch_class(Callback):
+
+    def on_epoch_end(self, epoch, logs={}):
+
+        with open("log.txt", "a") as log_file:
+            log_file.write("Epoch: {}, logs: {}".format(logs))
+        log_file.close()
+
+log_epoch=log_epoch_class()
+
+clr = CyclicLR(base_lr=0.001, max_lr=0.1,
+                        step_size=2000., mode='triangular2')   
+
+
+for epoch in range(epochs):
+
+    hist = model.fit(np.array(cifar10_train_images), np.array(
+                     cifar10_train_labels), epochs=(epoch + 1),
+                     batch_size=batch_size, initial_epoch=epoch, validation_data=(cifar10_test_images, cifar10_test_labels)
+                     callbacks=[tb_callback, clr, log_epoch])
+
+    if args.save:
+            model.save("{e}.e{}.h5".format(filename,epoch))
+            
+    # K.set_value(opt.lr, 0.95 * K.get_value(opt.lr))
+    # if hist.history[early_stop.monitor][0] - prev_loss > early_stop.min_delta:
+    #     patience -= 1
+    # else:
+    #     patience = deepcopy(early_stop.patience)
+    # if patience <= 0:
+    #     break
+    # else:
+    #     prev_loss = hist.history[early_stop.monitor][0]
+
+
+# del cifar10_train_images, cifar10_train_labels
+
+# print(model.evaluate(np.array(cifar10_test_images),
+#     np.array(cifar10_test_labels), batch_size=256))
 
 model.save("{}.final.h5".format(filename))
 
